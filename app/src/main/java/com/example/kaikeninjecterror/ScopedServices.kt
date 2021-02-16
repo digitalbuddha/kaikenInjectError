@@ -14,17 +14,25 @@ abstract class AUserScope
 abstract class AAppScope
 
 @AppScope
-@MergeComponent(
-    scope = AAppScope::class,
-    dependencies = [UserDependencies::class]
-)
+@MergeComponent(scope = AAppScope::class)
 interface LaunchAppServices : AppServices {
     @Component.Factory
     interface Factory {
-        fun create(
-        ): LaunchAppServices
+        fun create(): AppServices
     }
 }
+
+@Module
+@ContributesTo(AAppScope::class)
+class LaunchAppServicesModule {
+    @Provides
+    @AppScope
+    fun provideTeardownHelper(): TeardownHelper = MyTeardownHelper()
+    @Provides
+    @AppScope
+    fun provideLifecycleLogger() : LifecycleLogger = RealLifecycleLogger
+}
+
 
 @ContributesTo(AAppScope::class)
 interface UserDependencies {
@@ -47,16 +55,6 @@ interface LaunchUserServices : UserServices {
     }
 }
 
-@Module
-@ContributesTo(AAppScope::class)
-class LaunchAppServicesModule {
-    @Provides
-    @AppScope
-    fun provideTeardownHelper(): TeardownHelper = MyTeardownHelper()
-    @Provides
-    @AppScope
-    fun provideLifecycleLogger() : LifecycleLogger = RealLifecycleLogger
-}
 
 @Module
 @ContributesTo(AUserScope::class)

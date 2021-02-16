@@ -1,11 +1,22 @@
+
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
-    id 'com.squareup.anvil'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
 }
+apply plugin: 'com.squareup.anvil'
+
 
 android {
+    packagingOptions {
+        pickFirst 'META-INF/kotlinx-io.kotlin_module'
+        pickFirst 'META-INF/atomicfu.kotlin_module'
+        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
+        pickFirst 'META-INF/kotlinx-coroutines-core.kotlin_module'
+        pickFirst 'META-INF/kotlinx-serialization-runtime.kotlin_module'
+        pickFirst 'META-INF/ktor-*'
+        pickFirst 'META-INF/annotations.kotlin_module'
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
@@ -35,12 +46,13 @@ android {
 }
 
 dependencies {
-    kapt 'com.dropbox.kaiken:kaiken-processor:1.0.4'
-    kapt 'com.google.dagger:dagger-compiler:2.28'
-    implementation 'com.google.dagger:dagger:2.28'
-    implementation 'com.dropbox.kaiken:kaiken-scoping:1.0.4'
-    implementation 'com.dropbox.kaiken:kaiken-runtime:1.0.4'
-    implementation 'com.dropbox.kaiken:kaiken-annotations:1.0.4'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.32'
+    kapt 'com.google.dagger:dagger-compiler:2.32'
+    kapt 'com.dropbox.kaiken:kaiken-processor:1.0.6-SNAPSHOT'
+    implementation 'com.google.dagger:dagger:2.32'
+    implementation 'com.dropbox.kaiken:kaiken-scoping:1.0.6-SNAPSHOT'
+    implementation 'com.dropbox.kaiken:kaiken-runtime:1.0.6-SNAPSHOT'
+    implementation 'com.dropbox.kaiken:kaiken-annotations:1.0.6-SNAPSHOT'
 
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -51,4 +63,14 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += ['-Xjvm-default=enable']
+    }
+}
+
+kapt {
+    correctErrorTypes = false
 }
